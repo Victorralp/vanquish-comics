@@ -1,12 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Default theme variables (dark theme) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 15, 23, 42; /* bg-gray-900 */
+  --background-secondary: 31, 41, 55; /* bg-gray-800 */
+  --background-tertiary: 55, 65, 81; /* bg-gray-700 */
+  --text-primary: 255, 255, 255; /* text-white */
+  --text-secondary: 209, 213, 219; /* text-gray-300 */
+  --text-muted: 156, 163, 175; /* text-gray-400 */
+  --accent: 234, 179, 8; /* yellow-500 */
+  --accent-hover: 202, 138, 4; /* yellow-600 */
+  --border: 55, 65, 81; /* border-gray-700 */
 }
 
+/* Light theme overrides */
+html.light-theme {
+  --background: 249, 250, 251; /* bg-gray-50 */
+  --background-secondary: 255, 255, 255; /* bg-white */
+  --background-tertiary: 243, 244, 246; /* bg-gray-100 */
+  --text-primary: 17, 24, 39; /* text-gray-900 */
+  --text-secondary: 55, 65, 81; /* text-gray-700 */
+  --text-muted: 107, 114, 128; /* text-gray-500 */
+  --accent: 59, 130, 246; /* blue-500 */
+  --accent-hover: 37, 99, 235; /* blue-600 */
+  --border: 229, 231, 235; /* border-gray-200 */
+}
+
+/* Dark theme explicit overrides */
+html.dark-theme {
+  --background: 15, 23, 42; /* bg-gray-900 */
+  --background-secondary: 31, 41, 55; /* bg-gray-800 */
+  --background-tertiary: 55, 65, 81; /* bg-gray-700 */
+  --text-primary: 255, 255, 255; /* text-white */
+  --text-secondary: 209, 213, 219; /* text-gray-300 */
+  --text-muted: 156, 163, 175; /* text-gray-400 */
+  --accent: 234, 179, 8; /* yellow-500 */
+  --accent-hover: 202, 138, 4; /* yellow-600 */
+  --border: 55, 65, 81; /* border-gray-700 */
+}
+
+/* Apply theme variables to elements */
+@layer base {
+  body {
+    @apply bg-primary text-primary transition-colors duration-300;
+  }
+}
+
+/* Define utility classes that use the theme variables */
+@layer utilities {
+  .bg-primary {
+    background-color: rgb(var(--background));
+  }
+  
+  .bg-secondary {
+    background-color: rgb(var(--background-secondary));
+  }
+  
+  .bg-tertiary {
+    background-color: rgb(var(--background-tertiary));
+  }
+  
+  .text-primary {
+    color: rgb(var(--text-primary));
+  }
+  
+  .text-secondary {
+    color: rgb(var(--text-secondary));
+  }
+  
+  .text-muted {
+    color: rgb(var(--text-muted));
+  }
+  
+  .border-theme {
+    border-color: rgb(var(--border));
+  }
+  
+  .bg-accent {
+    background-color: rgb(var(--accent));
+  }
+  
+  .bg-accent-hover {
+    background-color: rgb(var(--accent-hover));
+  }
+  
+  .text-accent {
+    color: rgb(var(--accent));
+  }
+  
+  .text-accent-hover {
+    color: rgb(var(--accent-hover));
+  }
+}
+
+/* Fix for prefers-color-scheme to be overridden by our theme settings */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* These will be overridden by our theme classes */
+  :root:not(.light-theme):not(.dark-theme) {
+    --background: 15, 23, 42; /* Use dark theme as default */
   }
 }
 
@@ -17,11 +110,15 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Fallback background and color in case CSS variables fail */
+  color: #ffffff;
+  background-color: #111827;
+  /* Use the actual CSS variables */
+  color: rgb(var(--text-primary));
+  background-color: rgb(var(--background));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: color 0.3s ease, background-color 0.3s ease;
 }
 
 * {
@@ -35,8 +132,62 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+/* Custom Scrollbar - Themed */
+.light-theme ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.light-theme ::-webkit-scrollbar-track {
+  background: rgb(243, 244, 246); /* light gray for light theme */
+}
+
+.light-theme ::-webkit-scrollbar-thumb {
+  background: rgb(156, 163, 175); /* medium gray for light theme */
+  border-radius: 4px;
+}
+
+.light-theme ::-webkit-scrollbar-thumb:hover {
+  background: rgb(107, 114, 128); /* darker gray for hover in light theme */
+}
+
+.dark-theme ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dark-theme ::-webkit-scrollbar-track {
+  background: rgb(31, 41, 55); /* dark gray for dark theme */
+}
+
+.dark-theme ::-webkit-scrollbar-thumb {
+  background: rgb(75, 85, 99); /* medium gray for dark theme */
+  border-radius: 4px;
+}
+
+.dark-theme ::-webkit-scrollbar-thumb:hover {
+  background: rgb(107, 114, 128); /* lighter gray for hover in dark theme */
+}
+
+/* Hero Section Animation */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
   }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.hero-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(90deg, #f59e0b, #ef4444);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }

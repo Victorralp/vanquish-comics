@@ -1,0 +1,11 @@
+DEFAULT AVATAR PLACEHOLDER
+
+Please download a default avatar image named "default-avatar.png" and place it in this directory.
+
+Recommended size: 200x200 pixels
+Recommended colors: Dark gray background with white simple user silhouette
+
+You can create this image using any image editor or download it from:
+https://placehold.co/200x200/111827/ffffff?text=User
+
+This image is used as a fallback when user profile pictures fail to load. 

@@ -1,0 +1,11 @@
+COMIC PLACEHOLDER IMAGE
+
+This file serves as a placeholder for the expected image file: comic-placeholder.jpg
+
+INSTRUCTIONS:
+1. Create a comic cover placeholder image named "comic-placeholder.jpg"
+2. Recommended size: 400x600 pixels
+3. Recommended colors: Dark gray background (#111827) with white text (#ffffff)
+4. You can create it using any image editor or service like: https://placehold.co/400x600/111827/ffffff?text=Comic+Cover
+
+This image is used as a fallback when comic covers fail to load or are not available. 
