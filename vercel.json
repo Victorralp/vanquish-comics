@@ -1,5 +1,5 @@
 {
   "framework": "nextjs",
-  "installCommand": "npm install --legacy-peer-deps",
-  "buildCommand": "npm run build"
+  "installCommand": "bash deploy.sh",
+  "buildCommand": "echo 'Build completed in deploy.sh'"
 } 
