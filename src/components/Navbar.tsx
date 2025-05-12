@@ -4,14 +4,16 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { FiMenu, FiX, FiUser, FiHeart, FiLogIn, FiSearch } from 'react-icons/fi';
+import { FiSearch, FiHeart, FiUser, FiLogIn, FiMenu, FiX } from 'react-icons/fi';
+import { FaHome, FaBook, FaMask } from 'react-icons/fa';
+import ThemeToggle from './ThemeToggle';
+import { Transition } from '@headlessui/react';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { useFavorites } from '@/lib/contexts/FavoritesContext';
-import ThemeToggle from '@/components/ThemeToggle';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const pathname = usePathname();
@@ -19,289 +21,216 @@ export default function Navbar() {
   const { user } = useAuth();
   const { favorites } = useFavorites();
 
+  const links = [
+    { href: '/', label: 'Home' },
+    { href: '/comics', label: 'Comics' },
+    { href: '/characters', label: 'Characters' },
+    { href: '/search', label: 'Search' },
+  ];
+
+  const isActive = (path: string) => {
+    if (path === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(path);
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 10) {
-        setScrolled(true);
+        setIsScrolled(true);
       } else {
-        setScrolled(false);
+        setIsScrolled(false);
       }
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
-  // Close mobile menu when changing routes
+  // Close mobile menu when the route changes
   useEffect(() => {
     setIsOpen(false);
-    setShowSearch(false);
   }, [pathname]);
 
-  // Handle search submission
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery('');
       setShowSearch(false);
     }
   };
 
-  const links = [
-    { href: '/', label: 'Home' },
-    { href: '/characters', label: 'Characters' },
-    { href: '/comics', label: 'Comics' },
-    { href: '/about', label: 'About' },
-  ];
-
-  const isActive = (path: string) => pathname === path;
-
   return (
-    <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? 'bg-gray-900/95 backdrop-blur-sm shadow-lg' : 'bg-transparent'
-      }`}
-    >
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center">
-            <div className="relative h-10 w-40 mr-2">
-              <Image 
-                src="/images/logo.png"
-                alt="Vanquish Comics Logo" 
-                fill 
-                className="object-contain" 
-                priority
-              />
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      isScrolled ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-md' : 'bg-white dark:bg-gray-900'
+    }`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <Link href="/" className="flex items-center">
+                <svg className="h-8 w-8 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                  <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                </svg>
+                <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">Vanquish Comics</span>
+              </Link>
             </div>
-          </Link>
+            <div className="hidden md:block">
+              <div className="ml-10 flex items-baseline space-x-4">
+                <Link href="/" className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                  pathname === '/' ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400'
+                }`}>
+                  <FaHome className="mr-1" /> Home
+                </Link>
+                <Link href="/comics" className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                  pathname.startsWith('/comics') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400'
+                }`}>
+                  <FaBook className="mr-1" /> Comics
+                </Link>
+                <Link href="/characters" className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                  pathname.startsWith('/characters') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400'
+                }`}>
+                  <FaMask className="mr-1" /> Characters
+                </Link>
+                <Link href="/search" className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                  pathname === '/search' ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400'
+                }`}>
+                  <FiSearch className="mr-1" /> Search
+                </Link>
+              </div>
+            </div>
+          </div>
+          <div className="hidden md:flex items-center space-x-4">
+            <ThemeToggle />
+            {user ? (
+              <>
+                <Link href="/favorites" className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                  pathname === '/favorites' ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400'
+                }`}>
+                  <FiHeart className="mr-1" /> 
+                  Favorites
+                  {favorites.length > 0 && (
+                    <span className="ml-1 bg-indigo-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {favorites.length}
+                    </span>
+                  )}
+                </Link>
+                <Link href="/profile" className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                  pathname.startsWith('/profile') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400'
+                }`}>
+                  {user.photoURL ? (
+                    <div className="relative h-6 w-6 rounded-full overflow-hidden mr-2">
+                      <Image 
+                        src={user.photoURL} 
+                        alt="Profile" 
+                        fill 
+                        className="object-cover" 
+                        onError={(e) => {
+                          // Set fallback image if loading fails
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/images/default-avatar.png';
+                          target.onerror = null; // Prevent infinite error loop
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <FiUser className="mr-1" />
+                  )}
+                  Profile
+                </Link>
+              </>
+            ) : (
+              <Link href="/login" className="flex items-center px-3 py-2 rounded-md text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 transition-colors">
+                <FiLogIn className="mr-1" /> Login
+              </Link>
+            )}
+          </div>
+          <div className="-mr-2 flex md:hidden">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              type="button"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 dark:focus:ring-offset-gray-900 focus:ring-indigo-500"
+              aria-controls="mobile-menu"
+              aria-expanded="false"
+            >
+              <span className="sr-only">Open main menu</span>
+              {!isOpen ? (
+                <FiMenu className="block h-6 w-6" aria-hidden="true" />
+              ) : (
+                <FiX className="block h-6 w-6" aria-hidden="true" />
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center">
-            <div className="flex space-x-4 mr-4">
+      <Transition
+        show={isOpen}
+        enter="transition ease-out duration-100 transform"
+        enterFrom="opacity-0 scale-95"
+        enterTo="opacity-100 scale-100"
+        leave="transition ease-in duration-75 transform"
+        leaveFrom="opacity-100 scale-100"
+        leaveTo="opacity-0 scale-95"
+      >
+        {(ref) => (
+          <div className="md:hidden" id="mobile-menu">
+            <div ref={ref} className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-gray-900 shadow-lg">
               {links.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${
                     isActive(link.href)
-                      ? 'bg-yellow-500 text-gray-900'
-                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                      ? 'text-indigo-600 dark:text-indigo-400'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400'
                   }`}
                 >
+                  {link.href === '/' && <FaHome className="mr-2" />}
+                  {link.href === '/comics' && <FaBook className="mr-2" />}
+                  {link.href === '/characters' && <FaMask className="mr-2" />}
+                  {link.href === '/search' && <FiSearch className="mr-2" />}
                   {link.label}
                 </Link>
               ))}
-            </div>
-
-            {/* Search Button */}
-            <div className="relative mr-4">
-              {showSearch ? (
-                <form onSubmit={handleSearch} className="relative">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search..."
-                    className="w-44 bg-gray-800 border border-gray-700 rounded-lg py-1.5 px-3 pr-8 text-white text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                    autoFocus
-                  />
-                  <button
-                    type="submit"
-                    className="absolute right-2 top-1.5 text-gray-400"
-                  >
-                    <FiSearch size={16} />
-                  </button>
-                </form>
-              ) : (
-                <button
-                  onClick={() => setShowSearch(true)}
-                  className="p-2 text-gray-300 hover:text-white transition-colors"
-                  aria-label="Search"
-                >
-                  <FiSearch size={20} />
-                </button>
-              )}
-            </div>
-
-            {/* User Navigation */}
-            <div className="flex items-center space-x-2">
               {user ? (
                 <>
-                  <Link
-                    href="/favorites"
-                    className="relative p-2 text-gray-300 hover:text-white transition-colors"
-                    aria-label="Favorites"
-                  >
-                    <FiHeart size={20} />
-                    {favorites.length > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-yellow-500 text-xs text-black font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                        {favorites.length}
-                      </span>
-                    )}
-                  </Link>
-                  
-                  <Link
-                    href="/profile"
-                    className="flex items-center px-3 py-2 text-sm font-medium rounded-md bg-gray-700 text-white hover:bg-gray-600 transition-colors"
-                  >
-                    {user.photoURL ? (
-                      <div className="relative h-6 w-6 rounded-full overflow-hidden mr-2">
-                        <Image 
-                          src={user.photoURL} 
-                          alt="Profile" 
-                          fill 
-                          className="object-cover" 
-                          onError={(e) => {
-                            // Set fallback image if loading fails
-                            const target = e.target as HTMLImageElement;
-                            target.src = '/images/default-avatar.png';
-                            target.onerror = null; // Prevent infinite error loop
-                          }}
-                        />
-                      </div>
-                    ) : (
-                      <FiUser className="mr-2" />
-                    )}
-                    Profile
-                  </Link>
-                </>
-              ) : (
-                <Link
-                  href="/login"
-                  className="flex items-center px-3 py-2 text-sm font-medium rounded-md bg-yellow-500 text-gray-900 hover:bg-yellow-400 transition-colors"
-                >
-                  <FiLogIn className="mr-2" />
-                  Login
-                </Link>
-              )}
-            </div>
-
-            {/* Add the ThemeToggle here */}
-            <ThemeToggle />
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="flex items-center md:hidden">
-            {/* Mobile search button */}
-            <button
-              onClick={() => setShowSearch(!showSearch)}
-              className="p-2 rounded-md text-gray-400 hover:text-white"
-            >
-              <FiSearch size={20} />
-            </button>
-            
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-md text-gray-400 hover:text-white focus:outline-none"
-            >
-              {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-            </button>
-          </div>
-        </div>
-        
-        {/* Mobile Search */}
-        {showSearch && (
-          <div className="pb-2 px-4">
-            <form onSubmit={handleSearch} className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search characters and comics..."
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg py-2 px-4 pr-10 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                autoFocus
-              />
-              <button
-                type="submit"
-                className="absolute right-3 top-2.5 text-gray-400"
-              >
-                <FiSearch size={20} />
-              </button>
-            </form>
-          </div>
-        )}
-      </div>
-
-      {/* Mobile Navigation */}
-      {isOpen && (
-        <div className="md:hidden bg-gray-800 shadow-lg">
-          <div className="px-2 pt-2 pb-3 space-y-1">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isActive(link.href)
-                    ? 'bg-yellow-500 text-gray-900'
-                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-            
-            {/* Add ThemeToggle here */}
-            <div className="px-4 py-2">
-              <ThemeToggle variant="button" className="w-full justify-center" />
-            </div>
-            
-            <div className="border-t border-gray-700 pt-4">
-              {user ? (
-                <>
-                  <Link
-                    href="/favorites"
-                    className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-                  >
-                    <FiHeart className="mr-2" />
+                  <Link href="/favorites" className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${
+                    pathname === '/favorites' ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400'
+                  }`}>
+                    <FiHeart className="mr-2" /> 
                     Favorites
                     {favorites.length > 0 && (
-                      <span className="ml-2 bg-yellow-500 text-xs text-black font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      <span className="ml-1 bg-indigo-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                         {favorites.length}
                       </span>
                     )}
                   </Link>
-                  
-                  <Link
-                    href="/profile"
-                    className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-                  >
-                    {user.photoURL ? (
-                      <div className="relative h-6 w-6 rounded-full overflow-hidden mr-2">
-                        <Image 
-                          src={user.photoURL} 
-                          alt="Profile" 
-                          fill 
-                          className="object-cover" 
-                          onError={(e) => {
-                            // Set fallback image if loading fails
-                            const target = e.target as HTMLImageElement;
-                            target.src = '/images/default-avatar.png';
-                            target.onerror = null; // Prevent infinite error loop
-                          }}
-                        />
-                      </div>
-                    ) : (
-                      <FiUser className="mr-2" />
-                    )}
-                    Profile
+                  <Link href="/profile" className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${
+                    pathname.startsWith('/profile') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400'
+                  }`}>
+                    <FiUser className="mr-2" /> Profile
                   </Link>
                 </>
               ) : (
-                <Link
-                  href="/login"
-                  className="flex items-center px-3 py-2 rounded-md text-base font-medium bg-yellow-500 text-gray-900 hover:bg-yellow-400"
-                >
-                  <FiLogIn className="mr-2" />
-                  Login
+                <Link href="/login" className="flex items-center px-3 py-2 rounded-md text-base font-medium bg-indigo-600 text-white hover:bg-indigo-700">
+                  <FiLogIn className="mr-2" /> Login
                 </Link>
               )}
+              <div className="flex items-center justify-between px-3 py-2">
+                <div className="text-sm text-gray-600 dark:text-gray-300">Theme</div>
+                <ThemeToggle />
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </Transition>
     </nav>
   );
 } 
