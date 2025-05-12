@@ -2,12 +2,13 @@ import { NextResponse } from 'next/server';
 import mockCharacters from '@/lib/api/mock-characters';
 import { getCharacterById } from '@/lib/api/superhero'; // Import the *actual* API fetching function
 
+// Updated type definition to match Next.js App Router API
 export async function GET(
   request: Request, 
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   // Extract the id properly to avoid Next.js warning
-  const { id } = params;
+  const { id } = context.params;
 
   if (!id) {
     return NextResponse.json({ error: 'Character ID is required' }, { status: 400 });

@@ -9,10 +9,13 @@ const API_KEY = process.env.NEXT_PUBLIC_COMICVINE_API_KEY || '';
  * API route for fetching a specific comic by ID
  * GET /api/comics/[id]
  */
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  request: NextRequest, 
+  context: { params: { id: string } }
+) {
   try {
     // Ensure params is properly resolved before using it
-    const { id: idString } = params;
+    const { id: idString } = context.params;
     const id = parseInt(idString, 10);
     
     if (isNaN(id)) {
@@ -75,7 +78,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     console.error('Error fetching comic by ID from API:', error);
     
     // Fallback to mock data on error
-    const { id: idString } = params;
+    const { id: idString } = context.params;
     const id = parseInt(idString, 10);
     const comic = mockComics.find(c => c.id === id);
     
