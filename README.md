@@ -1,5 +1,11 @@
 # Vanquish Comics
 
+A modern web application for browsing and reading comics.
+
+## Deployment Status
+
+Latest deployment: [Date: 2025-05-12]
+
 A Next.js application for browsing superhero characters and comics. This project uses a mock superhero API to display information about various heroes from both DC and Marvel universes.
 
 ## Features
