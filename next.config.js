@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Add experimental configuration to better resolve path aliases
+  experimental: {
+    esmExternals: 'loose',
+  },
   images: {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
